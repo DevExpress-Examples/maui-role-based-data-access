@@ -1,24 +1,25 @@
-﻿using System.Text;
-using DevExpress.ExpressApp.AspNetCore.WebApi;
-using DevExpress.ExpressApp.Core;
-using DevExpress.ExpressApp.Security;
-using DevExpress.ExpressApp.Security.Authentication.ClientServer;
-using DevExpress.ExpressApp.WebApi.Services;
-using DevExpress.Persistent.BaseImpl.EF;
+﻿using DevExpress.ExpressApp.Security;
+using DevExpress.Persistent.Base;
+using Microsoft.EntityFrameworkCore;
 using DevExpress.Persistent.BaseImpl.EF.PermissionPolicy;
-using DevExpress.Persistent.BaseImpl.EFCore.AuditTrail;
+using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.OData;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Identity.Web;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using WebAPI.API.Security;
-using WebAPI.BusinessObjects;
-using WebAPI.Services;
+using DevExpress.ExpressApp.WebApi.Services;
+using Microsoft.AspNetCore.OData;
+using DevExpress.ExpressApp.Core;
+using WebApi.JWT;
+using DevExpress.ExpressApp.Security.Authentication;
+using DevExpress.ExpressApp.Security.Authentication.ClientServer;
+using WebApi.Core;
+using DevExpress.ExpressApp.AspNetCore.WebApi;
+using WebApi.BusinessObjects;
+using System.Runtime.InteropServices;
+using DevExpress.Persistent.BaseImpl.EF;
 
-namespace WebAPI;
+namespace WebApi;
 
 public class Startup {
     public Startup(IConfiguration configuration) {
@@ -36,23 +37,21 @@ public class Startup {
             .AddSingleton<IWebApiApplicationSetup, WebApiApplicationSetup>();
 
         services.AddXafAspNetCoreSecurity(Configuration, options => {
-		        options.RoleType = typeof(PermissionPolicyRole);
-		        // ApplicationUser descends from PermissionPolicyUser and supports the OAuth authentication. For more information, refer to the following topic: https://docs.devexpress.com/eXpressAppFramework/402197
-		        // If your application uses PermissionPolicyUser or a custom user type, set the UserType property as follows:
-		        options.UserType = typeof(ApplicationUser);
-		        // ApplicationUserLoginInfo is only necessary for applications that use the ApplicationUser user type.
-		        // If you use PermissionPolicyUser or a custom user type, comment out the following line:
-		        options.UserLoginInfoType = typeof(ApplicationUserLoginInfo);
+            options.RoleType = typeof(PermissionPolicyRole);
+            // ApplicationUser descends from PermissionPolicyUser and supports the OAuth authentication. For more information, refer to the following topic: https://docs.devexpress.com/eXpressAppFramework/402197
+            // If your application uses PermissionPolicyUser or a custom user type, set the UserType property as follows:
+            options.UserType = typeof(BusinessObjects.ApplicationUser);
+            // ApplicationUserLoginInfo is only necessary for applications that use the ApplicationUser user type.
+            // If you use PermissionPolicyUser or a custom user type, comment out the following line:
+            options.UserLoginInfoType = typeof(BusinessObjects.ApplicationUserLoginInfo);
 
-		        options.SupportNavigationPermissionsForTypes = false;
-	        })
-	        .AddAuthenticationStandard(options => {
-		        options.IsSupportChangePassword = true;
-	        });
-        const string customBearerSchemeName = "CustomBearer";
-        var authentication = services.AddAuthentication(customBearerSchemeName);
-        authentication
-            .AddJwtBearer(customBearerSchemeName, options => {
+            options.SupportNavigationPermissionsForTypes = false;
+        }).AddAuthenticationStandard(options => {
+            options.IsSupportChangePassword = true;
+        });
+        services
+            .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options => {
                 options.TokenValidationParameters = new TokenValidationParameters() {
                     ValidateIssuerSigningKey = true,
                     //ValidIssuer = Configuration["Authentication:Jwt:Issuer"],
@@ -62,53 +61,43 @@ public class Startup {
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Authentication:Jwt:IssuerSigningKey"]))
                 };
             });
-        //Configure OAuth2 Identity Providers based on your requirements. For more information, see
-        //https://docs.devexpress.com/eXpressAppFramework/402197/task-based-help/security/how-to-use-active-directory-and-oauth2-authentication-providers-in-blazor-applications
-        //https://developers.google.com/identity/protocols/oauth2
-        //https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-auth-code-flow
-        //https://developers.facebook.com/docs/facebook-login/manually-build-a-login-flow
-        authentication.AddMicrosoftIdentityWebApi(Configuration, configSectionName: "Authentication:AzureAd");
 
         services.AddAuthorization(options => {
             options.DefaultPolicy = new AuthorizationPolicyBuilder(
-                JwtBearerDefaults.AuthenticationScheme,
-                customBearerSchemeName)
+                JwtBearerDefaults.AuthenticationScheme)
                     .RequireAuthenticatedUser()
                     .RequireXafAuthentication()
                     .Build();
         });
-        services.AddDbContextFactory<WebAPIEFCoreDbContext>((serviceProvider, options) => {
+        services.AddDbContextFactory<WebApi.BusinessObjects.WebAPIEFCoreDbContext>((serviceProvider, options) => {
             // Uncomment this code to use an in-memory database. This database is recreated each time the server starts. With the in-memory database, you don't need to make a migration when the data model is changed.
             // Do not use this code in production environment to avoid data loss.
             // We recommend that you refer to the following help topic before you use an in-memory database: https://docs.microsoft.com/en-us/ef/core/testing/in-memory
             //options.UseInMemoryDatabase("InMemory");
-            string connectionString = Configuration.GetConnectionString("ConnectionString");
-            options.UseSqlServer(connectionString);
+
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
+                string connectionString = Configuration.GetConnectionString("ConnectionString");
+                options.UseSqlServer(connectionString);
+            }
+            else {
+                string sqliteDBPath = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "WebAPIRoleBased.db");
+                options.UseSqlite($"Data Source={sqliteDBPath}");
+            }
+
             options.UseChangeTrackingProxies();
             options.UseObjectSpaceLinkProxies();
             options.UseLazyLoadingProxies();
             options.UseSecurity(serviceProvider);
         }, ServiceLifetime.Scoped);
-        services.AddXafReportingCore(options => {
-            options.ReportDataType = typeof(ReportDataV2);
-        });
-        services.AddDbContextFactory<WebAPIAuditingDbContext>((_, options) => {
-            string connectionString = Configuration.GetConnectionString("ConnectionString");
-            options.UseSqlServer(connectionString);
-            options.UseChangeTrackingProxies();
-            options.UseObjectSpaceLinkProxies();
-            options.UseLazyLoadingProxies();
-        }, ServiceLifetime.Scoped);
-        services.AddAuditTrail().AddAuditedDbContextFactory<WebAPIEFCoreDbContext, WebAPIAuditingDbContext>();
 
         services
-	        .AddXafWebApi(Configuration, options => {
-		        // Use options.BusinessObject<YourBusinessObject>() to make the Business Object available in the Web API and generate the GET, POST, PUT, and DELETE HTTP methods for it.
-		        options.BusinessObject<Post>();
-		        options.BusinessObject<ApplicationUser>();
-		        options.BusinessObject<MediaDataObject>();
-		        options.BusinessObject<MediaResourceObject>();
-	        });
+            .AddXafWebApi(Configuration, options => {
+                // Make your business objects available in the Web API and generate the GET, POST, PUT, and DELETE HTTP methods for it.
+                options.BusinessObject<Post>();
+                options.BusinessObject<ApplicationUser>();
+                options.BusinessObject<MediaDataObject>();
+                options.BusinessObject<MediaResourceObject>();
+            });
         services
             .AddControllers()
             .AddOData((options, serviceProvider) => {
@@ -122,7 +111,7 @@ public class Startup {
             c.SwaggerDoc("v1", new OpenApiInfo {
                 Title = "WebAPI API",
                 Version = "v1",
-                Description = @"Use AddXafWebApi(options) in the WebAPI.WebApi\Startup.cs file to make Business Objects available in the Web API."
+                Description = @"Use AddXafWebApi(options) in the WebApi\Startup.cs file to make Business Objects available in the Web API."
             });
             c.AddSecurityDefinition("JWT", new OpenApiSecurityScheme() {
                 Type = SecuritySchemeType.Http,
@@ -140,36 +129,8 @@ public class Startup {
                                 Id = "JWT"
                             }
                         },
-                        Array.Empty<string>()
+                        new string[0]
                     },
-            });
-            var azureAdAuthorityUrl = $"{Configuration["Authentication:AzureAd:Instance"]}{Configuration["Authentication:AzureAd:TenantId"]}";
-            c.AddSecurityDefinition("OAuth2", new OpenApiSecurityScheme {
-                Type = SecuritySchemeType.OAuth2,
-                Flows = new OpenApiOAuthFlows() {
-                    AuthorizationCode = new OpenApiOAuthFlow() {
-                        AuthorizationUrl = new Uri($"{azureAdAuthorityUrl}/oauth2/v2.0/authorize"),
-                        TokenUrl = new Uri($"{azureAdAuthorityUrl}/oauth2/v2.0/token"),
-                        Scopes = new Dictionary<string, string> {
-                            // Configure scopes corresponding to https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-configure-app-expose-web-apis
-                            { @"[Enter the scope name in the WebAPI.WebApi\Startup.cs file]", @"[Enter the scope description in the WebAPI.WebApi\Startup.cs file]" }
-                        }
-                    }
-                }
-            });
-            c.AddSecurityRequirement(new OpenApiSecurityRequirement() {
-                {
-                    new OpenApiSecurityScheme {
-                        Name = "OAuth2",
-                        Scheme = "OAuth2",
-                        Reference = new OpenApiReference {
-                            Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
-                            Id = "OAuth2"
-                        },
-                        In = ParameterLocation.Header
-                    },
-                    Array.Empty<string>()
-                }
             });
         });
     }
@@ -181,8 +142,6 @@ public class Startup {
             app.UseSwagger();
             app.UseSwaggerUI(c => {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "WebAPI WebApi v1");
-                c.OAuthClientId(Configuration["Authentication:AzureAd:ClientId"]);
-                c.OAuthUsePkce();
             });
         }
         else {
@@ -190,7 +149,9 @@ public class Startup {
             // The default HSTS value is 30 days. To change this for production scenarios, see: https://aka.ms/aspnetcore-hsts.
             app.UseHsts();
         }
+#if !DEBUG
         app.UseHttpsRedirection();
+#endif
         app.UseRequestLocalization();
         app.UseStaticFiles();
         app.UseRouting();

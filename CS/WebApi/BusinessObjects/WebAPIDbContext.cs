@@ -1,12 +1,12 @@
-﻿using DevExpress.ExpressApp.Design;
-using DevExpress.ExpressApp.EFCore.DesignTime;
-using DevExpress.Persistent.BaseImpl.EF;
-using DevExpress.Persistent.BaseImpl.EF.PermissionPolicy;
-using DevExpress.Persistent.BaseImpl.EFCore.AuditTrail;
+﻿using DevExpress.ExpressApp.EFCore.Updating;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
+using DevExpress.Persistent.BaseImpl.EF.PermissionPolicy;
+using DevExpress.Persistent.BaseImpl.EF;
+using DevExpress.ExpressApp.Design;
+using DevExpress.ExpressApp.EFCore.DesignTime;
 
-namespace WebAPI.BusinessObjects;
+namespace WebApi.BusinessObjects;
 
 // This code allows our Model Editor to get relevant EF Core metadata at design time.
 // For details, please refer to https://supportcenter.devexpress.com/ticket/details/t933891.
@@ -35,60 +35,19 @@ public class WebAPIEFCoreDbContext : DbContext {
 	public WebAPIEFCoreDbContext(DbContextOptions<WebAPIEFCoreDbContext> options) : base(options) {
 	}
 	public DbSet<PermissionPolicyRole> Roles { get; set; }
-	public DbSet<ApplicationUser> Users { get; set; }
-    public DbSet<ApplicationUserLoginInfo> UserLoginInfos { get; set; }
-	public DbSet<FileData> FileData { get; set; }
-	public DbSet<ReportDataV2> ReportDataV2 { get; set; }
-    public DbSet<AuditDataItemPersistent> AuditData { get; set; }
-    public DbSet<AuditEFCoreWeakReference> AuditEFCoreWeakReference { get; set; }
+	public DbSet<WebApi.BusinessObjects.ApplicationUser> Users { get; set; }
+    public DbSet<WebApi.BusinessObjects.ApplicationUserLoginInfo> UserLoginInfos { get; set; }
     public DbSet<Post> Posts { get; set; }
-    
 
     protected override void OnModelCreating(ModelBuilder modelBuilder) {
         base.OnModelCreating(modelBuilder);
         modelBuilder.HasChangeTrackingStrategy(ChangeTrackingStrategy.ChangingAndChangedNotificationsWithOriginalValues);
-        modelBuilder.Entity<ApplicationUserLoginInfo>(b => {
+        modelBuilder.Entity<WebApi.BusinessObjects.ApplicationUserLoginInfo>(b => {
             b.HasIndex(nameof(DevExpress.ExpressApp.Security.ISecurityUserLoginInfo.LoginProviderName), nameof(DevExpress.ExpressApp.Security.ISecurityUserLoginInfo.ProviderUserKey)).IsUnique();
         });
-        modelBuilder.Entity<AuditEFCoreWeakReference>()
-            .HasMany(p => p.AuditItems)
-            .WithOne(p => p.AuditedObject);
-        modelBuilder.Entity<AuditEFCoreWeakReference>()
-            .HasMany(p => p.OldItems)
-            .WithOne(p => p.OldObject);
-        modelBuilder.Entity<AuditEFCoreWeakReference>()
-            .HasMany(p => p.NewItems)
-            .WithOne(p => p.NewObject);
-        modelBuilder.Entity<AuditEFCoreWeakReference>()
-            .HasMany(p => p.UserItems)
-            .WithOne(p => p.UserObject);
         modelBuilder.Entity<ModelDifference>()
             .HasMany(t => t.Aspects)
             .WithOne(t => t.Owner)
             .OnDelete(DeleteBehavior.Cascade);
-    }
-}
-
-public class WebAPIAuditingDbContext : DbContext {
-    public WebAPIAuditingDbContext(DbContextOptions<WebAPIAuditingDbContext> options) : base(options) {
-    }
-    public DbSet<AuditDataItemPersistent> AuditData { get; set; }
-    public DbSet<AuditEFCoreWeakReference> AuditEFCoreWeakReference { get; set; }
-
-	protected override void OnModelCreating(ModelBuilder modelBuilder) {
-        base.OnModelCreating(modelBuilder);
-        modelBuilder.HasChangeTrackingStrategy(ChangeTrackingStrategy.ChangingAndChangedNotificationsWithOriginalValues);
-        modelBuilder.Entity<AuditEFCoreWeakReference>()
-            .HasMany(p => p.AuditItems)
-            .WithOne(p => p.AuditedObject);
-        modelBuilder.Entity<AuditEFCoreWeakReference>()
-            .HasMany(p => p.OldItems)
-            .WithOne(p => p.OldObject);
-        modelBuilder.Entity<AuditEFCoreWeakReference>()
-            .HasMany(p => p.NewItems)
-            .WithOne(p => p.NewObject);
-        modelBuilder.Entity<AuditEFCoreWeakReference>()
-            .HasMany(p => p.UserItems)
-            .WithOne(p => p.UserObject);
     }
 }

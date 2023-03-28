@@ -8,11 +8,21 @@
     <Configurations>Debug;Release;EasyTest</Configurations>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(RunConfiguration)' == 'WebAPI.WebApi' " />
   <ItemGroup>
     <None Remove="Model.xafml" />
-    <None Remove="Resourses\Janete.jpg" />
-    <None Remove="Resourses\John.jpg" />
+    <None Remove="Resources\Admin.jpg" />
+    <None Remove="Resources\Alex.jpg" />
+    <None Remove="Resources\Antony.jpg" />
+    <None Remove="Resources\Dennis.jpg" />
+    <None Remove="Resources\draftImage.png" />
+    <None Remove="Resources\Editor.jpg" />
+    <None Remove="Resources\feedbackImage.jpg" />
+    <None Remove="Resources\leaningMaterialsImage.jpg" />
+    <None Remove="Resources\localizationImage.jpg" />
+    <None Remove="Resources\previewImage.png" />
+    <None Remove="Resources\releaseImage.jpg" />
+    <None Remove="Resources\upcomingFeaturesImage.jpg" />
+    <None Remove="Resources\Viewer.jpg" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Model.xafml">
@@ -20,25 +30,28 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resourses\Janete.jpg" />
-    <EmbeddedResource Include="Resourses\John.jpg" />
+    <EmbeddedResource Include="Resources\Admin.jpg" />
+    <EmbeddedResource Include="Resources\Alex.jpg" />
+    <EmbeddedResource Include="Resources\Antony.jpg" />
+    <EmbeddedResource Include="Resources\Dennis.jpg" />
+    <EmbeddedResource Include="Resources\draftImage.png" />
+    <EmbeddedResource Include="Resources\Editor.jpg" />
+    <EmbeddedResource Include="Resources\feedbackImage.jpg" />
+    <EmbeddedResource Include="Resources\leaningMaterialsImage.jpg" />
+    <EmbeddedResource Include="Resources\localizationImage.jpg" />
+    <EmbeddedResource Include="Resources\previewImage.png" />
+    <EmbeddedResource Include="Resources\releaseImage.jpg" />
+    <EmbeddedResource Include="Resources\upcomingFeaturesImage.jpg" />
+    <EmbeddedResource Include="Resources\Viewer.jpg" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="DevExpress.ExpressApp.Api.EFCore.All" Version="23.1.2-pre-*" />
-    <PackageReference Include="DevExpress.ExpressApp.AuditTrail.EFCore" Version="23.1.2-pre-*" />
     <PackageReference Include="DevExpress.ExpressApp.CodeAnalysis" Version="23.1.2-pre-*" />
-    <PackageReference Include="DevExpress.ExpressApp.ReportsV2" Version="23.1.2-pre-*" />
-    <PackageReference Include="DevExpress.ExpressApp.Validation" Version="23.1.2-pre-*" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.3" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.3" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="6.0.3" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.0" />
-    <PackageReference Include="Microsoft.Identity.Web.UI" Version="1.5.1" />
     <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.4.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Update="XtraReport1.cs">
-      <SubType>XtraReport</SubType>
-    </Compile>
   </ItemGroup>
 </Project>

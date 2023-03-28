@@ -1,13 +1,15 @@
 ﻿using DevExpress.ExpressApp;
+using DevExpress.Data.Filtering;
+using DevExpress.Persistent.Base;
+using DevExpress.ExpressApp.Updating;
 using DevExpress.ExpressApp.Security;
 using DevExpress.ExpressApp.SystemModule;
-using DevExpress.ExpressApp.Updating;
-using DevExpress.Persistent.Base;
+using DevExpress.ExpressApp.EF;
 using DevExpress.Persistent.BaseImpl.EF;
 using DevExpress.Persistent.BaseImpl.EF.PermissionPolicy;
-using WebAPI.BusinessObjects;
+using WebApi.BusinessObjects;
 
-namespace WebAPI.DatabaseUpdate;
+namespace WebApi.DatabaseUpdate;
 
 // For more typical usage scenarios, be sure to check out https://docs.devexpress.com/eXpressAppFramework/DevExpress.ExpressApp.Updating.ModuleUpdater
 public class Updater : ModuleUpdater {
@@ -17,118 +19,98 @@ public class Updater : ModuleUpdater {
     public override void UpdateDatabaseAfterUpdateSchema() {
         base.UpdateDatabaseAfterUpdateSchema();
 
-        var sampleUser = ObjectSpace.FirstOrDefault<ApplicationUser>(u => u.UserName == "User");
-        if(sampleUser == null) {
+        //Test users and posts are generated here
+        ApplicationUser alexUser = CreateUserIfDoesntExist("Alex", "123", () => GetRoleWithEditorPermissions());
+        if (ObjectSpace.IsNewObject(alexUser)) {
+            CreatePostIfDoesntExist(".NET MAUI New Blog Draft Title", "Draft text", "draftImage", alexUser, isPublished: false);
+            CreatePostIfDoesntExist(".NET MAUI — Your Feedback Counts", "Blog text", "feedbackImage", alexUser, true);
+            CreatePostIfDoesntExist(".NET MAUI — Upcoming Features", "Blog text", "upcomingFeaturesImage", alexUser, true);
+        }
+        ApplicationUser antonyUser = CreateUserIfDoesntExist("Antony", "123", () => GetRoleWithEditorPermissions());
+        if (ObjectSpace.IsNewObject(antonyUser)) {
+            CreatePostIfDoesntExist("Localize Your .NET MAUI MVVM Application", "Blog text", "feedbackImage", antonyUser, true);
+            CreatePostIfDoesntExist(".NET MAUI — Support for the Latest .NET 6 Updates & New Learning Materials", "Blog text", "leaningMaterialsImage", antonyUser, true);
+        }
+
+        ApplicationUser dennisUser = CreateUserIfDoesntExist("Dennis", "123", () => GetRoleWithEditorPermissions());
+        if (ObjectSpace.IsNewObject(dennisUser)) {
+            CreatePostIfDoesntExist("DevExpress Multi-Platform App UI Controls Support .NET MAUI GA Release (v22.1)", "Blog text", "releaseImage", dennisUser, true);
+            CreatePostIfDoesntExist("DevExpress UI Controls Support the Latest Microsoft .NET MAUI Preview 10", "Blog text", "previewImage", dennisUser, true);
+        }
+
+        CreateUserIfDoesntExist("Admin", "", () => CreateAdminRole());
+        CreateUserIfDoesntExist("Viewer", "", () => GetRoleWithDefaultPermissions());
+        CreateUserIfDoesntExist("Editor", "", () => GetRoleWithEditorPermissions());
+        ObjectSpace.CommitChanges();
+    }
+    private ApplicationUser CreateUserIfDoesntExist(string name, string password, Func<PermissionPolicyRole> createRoleAction) {
+        var sampleUser = ObjectSpace.FirstOrDefault<ApplicationUser>(u => u.UserName == name);
+        if (sampleUser == null) {
             sampleUser = ObjectSpace.CreateObject<ApplicationUser>();
-            sampleUser.UserName = "User";
-            // Set a password if the standard authentication type is used
-            sampleUser.SetPassword("");
-
-            // The UserLoginInfo object requires a user object Id (Oid).
-            // Commit the user object to the database before you create a UserLoginInfo object. This will correctly initialize the user key property.
-            // ObjectSpace.CommitChanges(); //This line persists created object(s).
-            // ((ISecurityUserWithLoginInfo)sampleUser).CreateUserLoginInfo(SecurityDefaults.PasswordAuthentication, ObjectSpace.GetKeyValueAsString(sampleUser));
+            sampleUser.Photo = ObjectSpace.CreateObject<MediaDataObject>();
+            sampleUser.Photo.MediaData = GetResourceByName(name);
+            sampleUser.UserName = name;
+            sampleUser.SetPassword(password);
+            sampleUser.Roles.Add(createRoleAction());
+            ((ISecurityUserWithLoginInfo)sampleUser).CreateUserLoginInfo(SecurityDefaults.PasswordAuthentication, ObjectSpace.GetKeyValueAsString(sampleUser));
         }
-        var defaultRole = CreateDefaultRole();
-        sampleUser.Roles.Add(defaultRole);
-
-        var editorUser = ObjectSpace.FirstOrDefault<ApplicationUser>(user=>user.UserName=="Editor")??ObjectSpace.CreateObject<ApplicationUser>();
-        if (ObjectSpace.IsNewObject(editorUser)) {
-            //create Editor User/Role
-            editorUser.UserName="Editor";
-
-            var editorRole = ObjectSpace.CreateObject<PermissionPolicyRole>();
-            editorRole.Name = "EditorRole";
-            editorRole.AddTypePermission<Post>(SecurityOperations.CRUDAccess, SecurityPermissionState.Allow);
-            editorRole.AddTypePermission<ApplicationUser>(SecurityOperations.CRUDAccess, SecurityPermissionState.Allow);
-
-            editorUser.Roles.Add(editorRole);
-            editorUser.Roles.Add(defaultRole);
-            editorUser.Photo = ObjectSpace.CreateObject<MediaDataObject>();
-            editorUser.Photo.MediaData = GetResourceByName("Janete");
-
-
-            //create Viewer User/Role
-            var viewerUser = ObjectSpace.CreateObject<ApplicationUser>();
-            viewerUser.UserName = "Viewer";
-            viewerUser.Photo = ObjectSpace.CreateObject<MediaDataObject>();
-            viewerUser.Photo.MediaData = GetResourceByName("John");
-            var viewerRole = ObjectSpace.CreateObject<PermissionPolicyRole>();
-            viewerRole.Name = "ViewerRole";
-            viewerRole.AddTypePermission<Post>(SecurityOperations.Read, SecurityPermissionState.Allow);
-            viewerRole.AddTypePermission<ApplicationUser>(SecurityOperations.Read, SecurityPermissionState.Allow);
-            viewerUser.Roles.Add(viewerRole);
-            viewerUser.Roles.Add(defaultRole);
-
-            //commit
-            ObjectSpace.CommitChanges();
-
-            //assign authentication type
-            foreach (var user in new[] { editorUser, viewerUser }.Cast<ISecurityUserWithLoginInfo>()) {
-	            user.CreateUserLoginInfo(SecurityDefaults.PasswordAuthentication,
-		            ObjectSpace.GetKeyValueAsString(user));
-            }
-
-            //sample posts
-            var post = ObjectSpace.CreateObject<Post>();
-            post.Title = "Hello World";
-            post.Content = "This is a FREE API for everybody";
-            post.Author=editorUser;
-            post = ObjectSpace.CreateObject<Post>();
-            post.Title = "Hello MAUI";
-            post.Content = "Please smash the like button to help our videos get discovered";
-            post.Author=editorUser;
-        }
-
-        var userAdmin = ObjectSpace.FirstOrDefault<ApplicationUser>(u => u.UserName == "Admin");
-        if(userAdmin == null) {
-            userAdmin = ObjectSpace.CreateObject<ApplicationUser>();
-            userAdmin.UserName = "Admin";
-            // Set a password if the standard authentication type is used
-            userAdmin.SetPassword("");
-
-            // The UserLoginInfo object requires a user object Id (Oid).
-            // Commit the user object to the database before you create a UserLoginInfo object. This will correctly initialize the user key property.
-            ObjectSpace.CommitChanges(); //This line persists created object(s).
-            ((ISecurityUserWithLoginInfo)userAdmin).CreateUserLoginInfo(SecurityDefaults.PasswordAuthentication, ObjectSpace.GetKeyValueAsString(userAdmin));
-        }
-        // If a role with the Administrators name doesn't exist in the database, create this role
-        var adminRole = ObjectSpace.FirstOrDefault<PermissionPolicyRole>(r => r.Name == "Administrators");
-        if(adminRole == null) {
-            adminRole = ObjectSpace.CreateObject<PermissionPolicyRole>();
-            adminRole.Name = "Administrators";
-        }
-        adminRole.IsAdministrative = true;
-		userAdmin.Roles.Add(adminRole);
-        ObjectSpace.CommitChanges(); //This line persists created object(s).
+        return sampleUser;
     }
-
+    private Post CreatePostIfDoesntExist(string title, string content, string imageFileName, ApplicationUser author, bool isPublished = false) {
+        var samplePost = ObjectSpace.FirstOrDefault<Post>(p => p.Title == title);
+        if (samplePost == null) {
+            samplePost = ObjectSpace.CreateObject<Post>();
+            samplePost.Title = title;
+            samplePost.Content = content;
+            samplePost.Author = author;
+            samplePost.IsPublished = isPublished;
+            samplePost.Image = ObjectSpace.CreateObject<MediaDataObject>();
+            samplePost.Image.MediaData = GetResourceByName(imageFileName);
+        }
+        return samplePost;
+    }
     private byte[] GetResourceByName(string shortName) {
-	    string embeddedResourceName = Array.Find(GetType().Assembly.GetManifestResourceNames(), (s) => s.Contains(shortName));
-	    var stream = GetType().Assembly.GetManifestResourceStream(embeddedResourceName!);
-	    if(stream == null) {
-		    throw new Exception($"Cannot read data from the {shortName} file!");
-	    }
-
-	    using var memoryStream = new MemoryStream();
-       stream.CopyTo(memoryStream);
-	    return memoryStream.ToArray();
-    }
-    private PermissionPolicyRole CreateDefaultRole() {
-        var defaultRole = ObjectSpace.FirstOrDefault<PermissionPolicyRole>(role => role.Name == "Default");
-        if(defaultRole == null) {
-            defaultRole = ObjectSpace.CreateObject<PermissionPolicyRole>();
-            defaultRole.Name = "Default";
-
-            defaultRole.AddObjectPermissionFromLambda<ApplicationUser>(SecurityOperations.Read, cm => cm.ID == (Guid)CurrentUserIdOperator.CurrentUserId(), SecurityPermissionState.Allow);
-            defaultRole.AddNavigationPermission(@"Application/NavigationItems/Items/Default/Items/MyDetails", SecurityPermissionState.Allow);
-            defaultRole.AddMemberPermissionFromLambda<ApplicationUser>(SecurityOperations.Write, "ChangePasswordOnFirstLogon", cm => cm.ID == (Guid)CurrentUserIdOperator.CurrentUserId(), SecurityPermissionState.Allow);
-            defaultRole.AddMemberPermissionFromLambda<ApplicationUser>(SecurityOperations.Write, "StoredPassword", cm => cm.ID == (Guid)CurrentUserIdOperator.CurrentUserId(), SecurityPermissionState.Allow);
-            defaultRole.AddTypePermissionsRecursively<PermissionPolicyRole>(SecurityOperations.Read, SecurityPermissionState.Deny);
-            defaultRole.AddTypePermissionsRecursively<ReportDataV2>(SecurityOperations.CRUDAccess, SecurityPermissionState.Allow);
-            defaultRole.AddTypePermissionsRecursively<MediaDataObject>(SecurityOperations.CRUDAccess, SecurityPermissionState.Allow);
-            defaultRole.AddTypePermissionsRecursively<MediaResourceObject>(SecurityOperations.CRUDAccess, SecurityPermissionState.Allow);
+        string embeddedResourceName = Array.Find(GetType().Assembly.GetManifestResourceNames(), (s) => s.Contains(shortName));
+        if (string.IsNullOrEmpty(embeddedResourceName))
+            return null;
+        var stream = GetType().Assembly.GetManifestResourceStream(embeddedResourceName!);
+        if (stream == null) {
+            return null;
         }
-        return defaultRole;
+        using var memoryStream = new MemoryStream();
+        stream.CopyTo(memoryStream);
+        return memoryStream.ToArray();
     }
+    private PermissionPolicyRole GetRoleWithDefaultPermissions(string name = "Default") {
+        var role = ObjectSpace.FirstOrDefault<PermissionPolicyRole>(role => role.Name == name);
+        if (role == null) {
+            role = ObjectSpace.CreateObject<PermissionPolicyRole>();
+            role.Name = name;
+            role.AddObjectPermissionFromLambda<ApplicationUser>(SecurityOperations.Read, cm => cm.ID == (Guid)CurrentUserIdOperator.CurrentUserId(), SecurityPermissionState.Allow);
+            role.AddNavigationPermission(@"Application/NavigationItems/Items/Default/Items/MyDetails", SecurityPermissionState.Allow);
+            role.AddMemberPermissionFromLambda<ApplicationUser>(SecurityOperations.Write, "ChangePasswordOnFirstLogon", cm => cm.ID == (Guid)CurrentUserIdOperator.CurrentUserId(), SecurityPermissionState.Allow);
+            role.AddMemberPermissionFromLambda<ApplicationUser>(SecurityOperations.Write, "StoredPassword", cm => cm.ID == (Guid)CurrentUserIdOperator.CurrentUserId(), SecurityPermissionState.Allow);
+            role.AddMemberPermission<ApplicationUser>(SecurityOperations.Read, "UserName;Photo", null, SecurityPermissionState.Allow);
+            role.AddTypePermissionsRecursively<PermissionPolicyRole>(SecurityOperations.Read, SecurityPermissionState.Deny);
+            role.AddTypePermissionsRecursively<MediaDataObject>(SecurityOperations.CRUDAccess, SecurityPermissionState.Allow);
+            role.AddTypePermissionsRecursively<MediaResourceObject>(SecurityOperations.CRUDAccess, SecurityPermissionState.Allow);
+            role.AddObjectPermissionFromLambda<Post>(SecurityOperations.Read, p => p.IsPublished, SecurityPermissionState.Allow);
+        }
+        return role;
+    }
+    private PermissionPolicyRole GetRoleWithEditorPermissions(string roleName = "Editor") {
+        PermissionPolicyRole role = GetRoleWithDefaultPermissions(roleName);
+        role.AddTypePermissionsRecursively<Post>(SecurityOperations.CRUDAccess, SecurityPermissionState.Allow);
+        return role;
+    }
+
+    private PermissionPolicyRole CreateAdminRole() {
+        var role = ObjectSpace.FirstOrDefault<PermissionPolicyRole>(role => role.Name == "Administrators");
+        if (role == null) {
+            role = ObjectSpace.CreateObject<PermissionPolicyRole>();
+        }
+        role.IsAdministrative = true;
+        return role;
+    }
+
 }

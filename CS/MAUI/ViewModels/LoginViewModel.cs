@@ -40,7 +40,13 @@ namespace MAUI.ViewModels {
 
         public bool IsAuthInProcess {
             get => isAuthInProcess;
-            set => SetProperty(ref isAuthInProcess, value);
+            set {
+                SetProperty(ref isAuthInProcess, value);
+                OnPropertyChanged(nameof(AllowNewAuthRequests));
+            }
+        }
+        public bool AllowNewAuthRequests {
+            get { return !IsAuthInProcess; }
         }
 
         public Command LoginCommand { get; }
@@ -48,21 +54,18 @@ namespace MAUI.ViewModels {
 
         async void OnLoginClicked() {
             IsAuthInProcess = true;
-            string response = await ((WebAPIService)DataStore).Authenticate(userName, password);
+            string response = await DataStore.Authenticate(userName, password);
             IsAuthInProcess = false;
             if (!string.IsNullOrEmpty(response)) {
-                ErrorText = TruncateError(response, 60);
+                ErrorText = response;
                 HasError = true;
                 return;
             }
             HasError = false;
             await Navigation.NavigateToAsync<ItemsViewModel>();
         }
-        public string TruncateError(string value, int maxChars) {
-            return value.Length <= maxChars ? value : value.Substring(0, maxChars) + "...";
-        }
         async void OnSignUpClicked() {
-            await Microsoft.Maui.Controls.Application.Current.MainPage.DisplayAlert("Sign up", "Please ask your system administrator to register you in the corporate system", "OK");
+            await Microsoft.Maui.Controls.Application.Current.MainPage.DisplayAlert("Help Message", "New users are added in the Updater.UpdateDatabaseAfterUpdateSchema method", "OK");
         }
     }
 }

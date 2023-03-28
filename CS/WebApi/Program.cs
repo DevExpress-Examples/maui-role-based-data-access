@@ -4,7 +4,7 @@ using DevExpress.ExpressApp.AspNetCore.DesignTime;
 using DevExpress.ExpressApp.Design;
 using DevExpress.ExpressApp.Utils;
 
-namespace WebAPI;
+namespace WebApi;
 
 public class Program : IDesignTimeApplicationFactory {
     private static bool ContainsArgument(string[] args, string argument) {
@@ -24,11 +24,12 @@ public class Program : IDesignTimeApplicationFactory {
             Console.WriteLine($"            2 - {DBUpdaterStatus.UpdateNotNeeded}");
         }
         else {
-            FrameworkSettings.DefaultSettingsCompatibilityMode = FrameworkSettingsCompatibilityMode.Latest;
+            DevExpress.ExpressApp.FrameworkSettings.DefaultSettingsCompatibilityMode = DevExpress.ExpressApp.FrameworkSettingsCompatibilityMode.Latest;
             IHost host = CreateHostBuilder(args).Build();
             if(ContainsArgument(args, "updateDatabase")) {
-	            using var serviceScope = host.Services.CreateScope();
-	            return serviceScope.ServiceProvider.GetRequiredService<IDBUpdater>().Update(ContainsArgument(args, "forceUpdate"), ContainsArgument(args, "silent"));
+                using(var serviceScope = host.Services.CreateScope()) {
+                    return serviceScope.ServiceProvider.GetRequiredService<DevExpress.ExpressApp.Utils.IDBUpdater>().Update(ContainsArgument(args, "forceUpdate"), ContainsArgument(args, "silent"));
+                }
             }
             else {
                 host.Run();

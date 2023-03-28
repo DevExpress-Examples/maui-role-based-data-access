@@ -1,20 +1,36 @@
 ﻿using MAUI.ViewModels;
 
-namespace MAUI.Views {
-	[XamlCompilation(XamlCompilationOptions.Compile)]
-	public partial class ItemsPage {
-		public ItemsPage() {
-			InitializeComponent();
-			BindingContext = ViewModel = new ItemsViewModel();
-		}
+namespace MAUI.Views
+{
+    [XamlCompilation(XamlCompilationOptions.Compile)]
+    public partial class ItemsPage
+    {
+        public ItemsPage()
+        {
+            InitializeComponent();
+        }
 
-		ItemsViewModel ViewModel { get; }
+        private void SimpleButton_Clicked(object sender, EventArgs e)
+        {
 
-		protected override void OnAppearing() {
-			base.OnAppearing();
-#pragma warning disable CS4014
-			ViewModel.OnAppearing();
-#pragma warning restore CS4014
-		}
-	}
+        }
+    }
+    public class TitleViewFix : Grid
+    {
+        bool isMeasured;
+        protected override Size MeasureOverride(double widthConstraint, double heightConstraint)
+        {
+            isMeasured = true;
+            return base.MeasureOverride(widthConstraint, heightConstraint);
+        }
+
+        protected override Size ArrangeOverride(Rect bounds)
+        {
+            if (!isMeasured)
+                Measure(bounds.Width, double.PositiveInfinity, MeasureFlags.None);
+            if (bounds.Height == 0)
+                bounds.Height = DesiredSize.Height + 12;
+            return base.ArrangeOverride(bounds);
+        }
+    }
 }

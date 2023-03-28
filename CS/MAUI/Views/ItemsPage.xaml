@@ -1,52 +1,76 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:dxcv="clr-namespace:DevExpress.Maui.CollectionView;assembly=DevExpress.Maui.CollectionView"
-             Title="{Binding Title}"
-             IconImageSource="browse"
-             xmlns:ios="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific;assembly=Microsoft.Maui.Controls"
-             xmlns:models="clr-namespace:MAUI.Models"
-             xmlns:viewModels="clr-namespace:MAUI.ViewModels"
-             ios:Page.UseSafeArea="true"
-             x:Class="MAUI.Views.ItemsPage">
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:dxcv="clr-namespace:DevExpress.Maui.CollectionView;assembly=DevExpress.Maui.CollectionView" Title="Blogs"
+    xmlns:ios="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific;assembly=Microsoft.Maui.Controls"
+    xmlns:dxc="clr-namespace:DevExpress.Maui.Controls;assembly=DevExpress.Maui.Controls"
+    xmlns:models="clr-namespace:MAUI.Models"
+    xmlns:viewModels="clr-namespace:MAUI.ViewModels"
+    xmlns:local="clr-namespace:MAUI.Views"
+    Style="{OnPlatform iOS={StaticResource ShellStyleiOS}, Android={StaticResource ShellStyle}}"
+    xmlns:webService="clr-namespace:MAUI.Services" x:DataType="{x:Type viewModels:ItemsViewModel}" ios:Page.UseSafeArea="true" x:Class="MAUI.Views.ItemsPage">
     <Shell.BackButtonBehavior>
-        <BackButtonBehavior IsEnabled="False" IsVisible="False"/>
+        <BackButtonBehavior IsVisible="False"/>
     </Shell.BackButtonBehavior>
-    <ContentPage.ToolbarItems >
-        <ToolbarItem Text="Add" Command="{Binding AddItemCommand}"   />
-        <ToolbarItem Text="ShapeIt" Command="{Binding ShapeItCommand}"   />
-    </ContentPage.ToolbarItems>
-    <ContentPage.Content>
-        <dxcv:DXCollectionView x:Name="ItemsListView"
-            ItemsSource="{Binding Items}"
-                SelectionMode="None">
+    <Shell.TitleView>
+        <local:TitleViewFix>
+            <Grid Padding="0" Margin="0" ColumnDefinitions="*,Auto,Auto">
+                <Label Grid.Column="0" VerticalOptions="Center" Text="Blogs" FontSize="20" Style="{OnPlatform iOS={StaticResource TitleColors_iOS_Label}, Android={StaticResource TitleColors_Android_Label}}" TextColor="{AppThemeBinding Light={StaticResource Gray950}, Dark={StaticResource White}}"/>
+                <Image Grid.Column="1" WidthRequest="24" HeightRequest="24">
+                    <Image.Source>
+                        <MultiBinding StringFormat="{}{0}PublicEndpoint/AuthorImage/{1}">
+                            <Binding Source="{x:Static webService:WebAPIService.ApiUrl}"/>
+                            <Binding Path="CurrentUser.ID"/>
+                        </MultiBinding>
+                    </Image.Source>
+                    <Image.Clip>
+                        <EllipseGeometry RadiusX="12" RadiusY="12" Center="12,12" />
+                    </Image.Clip>
+                </Image>
+                <dxc:SimpleButton Padding="0" Grid.Column="2" Command="{Binding LogoutCommand}" Margin="10,0,0,0" Style="{OnPlatform iOS={StaticResource TitleColors_iOS_Button}, Android={StaticResource TitleColors_Android_Button}}" >
+                    <Image Source="logout" WidthRequest="32" HeightRequest="16" />
+                </dxc:SimpleButton>
+            </Grid>
+        </local:TitleViewFix>
+    </Shell.TitleView>
+    <ContentPage.BindingContext>
+    
+        <viewModels:ItemsViewModel/>
+    </ContentPage.BindingContext>
+    <Grid>
+        <dxcv:DXCollectionView x:Name="ItemsListView" BackgroundColor="{AppThemeBinding Light={StaticResource Gray50}, Dark={StaticResource Background_Dark}}" ItemsSource="{Binding Posts}">
             <dxcv:DXCollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <Grid>
-                            <StackLayout Padding="18,20,10,01" x:DataType="models:Post">
-                                <Label Text="{Binding Title}"
-                                        LineBreakMode="NoWrap"
-                                        Style="{DynamicResource ListItemTextStyle}"
-                                        FontFamily="Roboto"
-                                        FontSize="14"
-                                        TextColor="{StaticResource NormalText}"/>
-                                <Label Text="{Binding Content}"
-                                        LineBreakMode="NoWrap"
-                                        Style="{DynamicResource ListItemDetailTextStyle}"
-                                        FontFamily="Roboto"
-                                        FontSize="12"
-                                        TextColor="{StaticResource NormalLightText}"/>
-                                <StackLayout.GestureRecognizers>
-                                    <TapGestureRecognizer
-                                            NumberOfTapsRequired="1"
-                                            Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:ItemsViewModel}}, Path=ItemTapped}"
-                                            CommandParameter="{Binding .}">
-                                    </TapGestureRecognizer>
-                                </StackLayout.GestureRecognizers>
-                            </StackLayout>
+                <DataTemplate x:DataType="{x:Type models:Post}">
+                    <dxc:SimpleButton CornerRadius="0" Margin="12,6,12,6" Padding="10" HeightRequest="100" BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Card_Background_Dark}}">
+                        <Grid ColumnDefinitions="150,Auto,5*,4*" RowDefinitions="*,Auto">
+                            <Image Grid.RowSpan="2" Margin="0,0,10,0" Aspect="AspectFill">
+                                <Image.Source>
+                                    <MultiBinding StringFormat="{}{0}PublicEndpoint/PostImage/{1}">
+                                        <Binding Source="{x:Static webService:WebAPIService.ApiUrl}"/>
+                                        <Binding Path="PostId"/>
+                                    </MultiBinding>
+                                </Image.Source>
+                            </Image>
+                            <Label Grid.Column="1" Grid.ColumnSpan="3" Text="{Binding Title}" FontAttributes="Bold" MaxLines="2"/>
+                            <Image Grid.Row="1" Grid.Column="1" WidthRequest="32" HeightRequest="32" Aspect="AspectFill">
+                                <Image.Source>
+                                    <MultiBinding StringFormat="{}{0}PublicEndpoint/AuthorImage/{1}">
+                                        <Binding Source="{x:Static webService:WebAPIService.ApiUrl}"/>
+                                        <Binding Path="Author.ID"/>
+                                    </MultiBinding>
+                                </Image.Source>
+                                <Image.Clip>
+                                    <EllipseGeometry RadiusX="16" RadiusY="16" Center="16,16" />
+                                </Image.Clip>
+                            </Image>
+                            <Label Text="{Binding Author.UserName}" Grid.Row="1" Grid.Column="2" VerticalOptions="Center" Margin="5,0,0,0"/>
+                            <dxc:SimpleButton Padding="4,0,4,0" IconColor="{StaticResource Gray500}" Icon="delete" Grid.Row="1" Grid.Column="3" HorizontalOptions="End" IsVisible="{Binding Source={RelativeSource Mode=FindAncestorBindingContext, AncestorType={x:Type viewModels:ItemsViewModel}}, Path=CanDeletePosts}" Command="{Binding Source={RelativeSource Mode=FindAncestorBindingContext, AncestorType={x:Type viewModels:ItemsViewModel}}, Path=DeletePostCommand}" CommandParameter="{Binding}" BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Card_Background_Dark}}">
+                                <Image Source="delete" HeightRequest="20"/>
+                            </dxc:SimpleButton>
                         </Grid>
-                    </DataTemplate>
-                </dxcv:DXCollectionView.ItemTemplate>
-            </dxcv:DXCollectionView>
-    </ContentPage.Content>
+                    </dxc:SimpleButton>
+                </DataTemplate>
+            </dxcv:DXCollectionView.ItemTemplate>
+        </dxcv:DXCollectionView>
+    </Grid>
 </ContentPage>

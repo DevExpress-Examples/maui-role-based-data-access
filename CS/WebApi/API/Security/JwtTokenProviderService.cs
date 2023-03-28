@@ -6,21 +6,21 @@ using DevExpress.ExpressApp.Security.Authentication;
 using DevExpress.ExpressApp.Security.Authentication.ClientServer;
 using Microsoft.IdentityModel.Tokens;
 
-namespace WebAPI.API.Security;
+namespace WebApi.JWT;
 
 public class JwtTokenProviderService : IAuthenticationTokenProvider {
-    readonly IStandardAuthenticationService _securityAuthenticationService;
-    readonly IConfiguration _configuration;
+    readonly IStandardAuthenticationService securityAuthenticationService;
+    readonly IConfiguration configuration;
 
     public JwtTokenProviderService(IStandardAuthenticationService securityAuthenticationService, IConfiguration configuration) {
-        _securityAuthenticationService = securityAuthenticationService;
-        _configuration = configuration;
+        this.securityAuthenticationService = securityAuthenticationService;
+        this.configuration = configuration;
     }
     public string Authenticate(object logonParameters) {
-        ClaimsPrincipal user = _securityAuthenticationService.Authenticate(logonParameters);
+        ClaimsPrincipal user = securityAuthenticationService.Authenticate(logonParameters);
 
         if(user != null) {
-            var issuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Authentication:Jwt:IssuerSigningKey"]));
+            var issuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Authentication:Jwt:IssuerSigningKey"]));
             var token = new JwtSecurityToken(
                 //issuer: configuration["Authentication:Jwt:Issuer"],
                 //audience: configuration["Authentication:Jwt:Audience"],

@@ -10,11 +10,9 @@ namespace MAUI {
 			DependencyService.Register<NavigationService>();
 			DependencyService.Register<WebAPIService>();
 
-			Routing.RegisterRoute(typeof(ItemDetailPage).FullName, typeof(ItemDetailPage));
-			Routing.RegisterRoute(typeof(NewItemPage).FullName, typeof(NewItemPage));
 			Routing.RegisterRoute(typeof(ItemsPage).FullName, typeof(ItemsPage));
 			
-			MainPage = new MainPage();
+			MainPage = new AppShell();
 			var navigationService = DependencyService.Get<INavigationService>();
 			navigationService.NavigateToAsync<LoginViewModel>(true);
 		}

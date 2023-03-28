@@ -91,21 +91,17 @@ You can find more information about our Web API Service's access restrictions in
 
 * Use the `PermissionPolicyRole` objects in the `Updater` class to add a user permissions. The following code snippet calls the `AddObjectPermissionFromLambda` method to configure the "Viewer" role that allows the user to read published posts:
 
-    # [C#](#tab/tabid-csharp)
     ```csharp
     role.AddObjectPermissionFromLambda(SecurityOperations.Read, p => p.IsPublished, SecurityPermissionState.Allow);
     ```
-    ***
 
     File to Look At: [Updater.cs](CS/WebAPI/DatabaseUpdate/Updater.cs)
 
 * The `AddTypePermissionsRecursively` method adds CRUD (create, read, update, delete) permissions for the `Post` type to the "Editor" users (Alex, Antony, and Dennis):
     
-    # [C#](#tab/tabid-csharp)
     ```csharp
     role.AddTypePermissionsRecursively<Post>(SecurityOperations.Read | SecurityOperations.Write | SecurityOperations.Create | SecurityOperations.DeleteObject, SecurityPermissionState.Allow);
     ```
-    ***
 
     File to Look At: [Updater.cs](CS/WebAPI/DatabaseUpdate/Updater.cs)
 
@@ -190,7 +186,6 @@ You can find more information about our Web API Service's access restrictions in
 
 * In the UI, the Image object caches its displayed image.  because we pass a string with a Uri to the Image. Image caching is described in the [MAUI documentation](https://learn.microsoft.com/en-us/dotnet/maui/user-interface/controls/image?view=net-maui-7.0#load-a-remote-image). To create a Uri, we use a [MultiBinding](https://learn.microsoft.com/en-us/dotnet/maui/fundamentals/data-binding/multibinding?view=net-maui-7.0) that gets the host name and the author or post ID:
 
-    # [Xaml](#tab/tabid-xaml)
     ```xaml
     <Image>
         <Image.Source>
@@ -201,7 +196,6 @@ You can find more information about our Web API Service's access restrictions in
         </Image.Source>
     </Image>
     ```
-    ***
 
     File to Look At: [ItemsPage.xaml](CS/MAUI/Views/ItemsPage.xaml)
 

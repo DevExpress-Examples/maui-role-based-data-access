@@ -3,101 +3,82 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using MAUI.Models;
-
 using ON = DevExpress.Maui.Core.Internal.On;
-
 namespace MAUI.Services;
-public static partial class HttpMessageHandler {
-    static readonly System.Net.Http.HttpMessageHandler PlatformHttpMessageHandler;
-    public static System.Net.Http.HttpMessageHandler GetMessageHandler() => PlatformHttpMessageHandler;
-}
 
 public class WebAPIService : IDataStore<Post> {
-    private static readonly HttpClient HttpClient = new(HttpMessageHandler.GetMessageHandler()) { Timeout = new TimeSpan(0, 0, 10) };
-    private readonly string _apiUrl = ON.Platform("https://172.21.68.146:45456/api/", "https://172.21.68.146:45456/api/");
+    private readonly HttpClient HttpClient = new() { Timeout = new TimeSpan(0, 0, 10) };
+#if DEBUG
+    public static readonly string ApiUrl = ON.Platform("http://10.0.2.2:5000/api/", "http://localhost:5000/api/");
+#else
+    public static readonly string ApiUrl = ON.Platform("https://10.0.2.2:5001/api/", "https://localhost:5001/api/");
+#endif
     private readonly string _postEndPointUrl;
     private const string ApplicationJson = "application/json";
 
-    public WebAPIService()
-        => _postEndPointUrl = _apiUrl + "odata/" + nameof(Post);
-
-    public async Task<bool> UserCanCreatePostAsync()
-        => (bool)JsonNode.Parse(await HttpClient.GetStringAsync($"{_apiUrl}CustomEndpoint/CanCreate?typename=Post"));
-
-    public async Task<byte[]> GetAuthorPhotoAsync(int postId)
-        => await HttpClient.GetByteArrayAsync($"{_apiUrl}CustomEndPoint/AuthorPhoto/{postId}");
-
-    public async Task ArchivePostAsync(Post post) {
-        var httpResponseMessage = await HttpClient.PostAsync($"{_apiUrl}CustomEndPoint/Archive", new StringContent(JsonSerializer.Serialize(post), Encoding.UTF8, ApplicationJson));
-        if (httpResponseMessage.IsSuccessStatusCode) {
-            await Shell.Current.DisplayAlert("Success", "This post is saved to disk", "Ok");
-        }
-        else {
-            await Shell.Current.DisplayAlert("Error", await httpResponseMessage.Content.ReadAsStringAsync(), "Ok");
-        }
+    public WebAPIService() {
+        _postEndPointUrl = ApiUrl + "odata/" + nameof(Post);
     }
 
-    public async Task ShapeIt() {
-        var bytes = await HttpClient.GetByteArrayAsync($"{_apiUrl}report/DownloadByName(Post Report)");
-#if ANDROID
-		var fileName = $"{FileSystem.Current.AppDataDirectory}/Report.pdf";
-		await File.WriteAllBytesAsync(fileName, bytes);
-		var intent = new Android.Content.Intent(Android.Content.Intent.ActionView);
-		intent.SetDataAndType(AndroidX.Core.Content.FileProvider.GetUriForFile(Android.App.Application.Context,
-			$"{Android.App.Application.Context.ApplicationContext?.PackageName}.provider",new Java.IO.File(fileName)),"application/pdf");
-		intent.SetFlags(Android.Content.ActivityFlags.ClearWhenTaskReset | Android.Content.ActivityFlags.NewTask | Android.Content.ActivityFlags.GrantReadUriPermission);
-		Android.App.Application.Context.ApplicationContext?.StartActivity(intent);
-#else
-        var path = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-        var fileName = $"{path}/Report.pdf";
-        await File.WriteAllBytesAsync(fileName, bytes);
-        var filePath = Path.Combine(path, "Report.pdf");
-        var viewer = UIKit.UIDocumentInteractionController.FromUrl(Foundation.NSUrl.FromFilename(filePath));
-        viewer.PresentOpenInMenu(new System.Drawing.RectangleF(0, -260, 320, 320), Platform.GetCurrentUIViewController()!.View!, true);
-#endif
+    public async Task<bool> UserCanDeletePostAsync() {
+        var jsonString = await HttpClient.GetStringAsync($"{ApiUrl}CustomEndpoint/CanDeletePost?typeName={typeof(Post).Name}");
+        return (bool)JsonNode.Parse(jsonString);
     }
-
-    public async Task<bool> AddItemAsync(Post post) {
-        var httpResponseMessage = await HttpClient.PostAsync(_postEndPointUrl,
-            new StringContent(JsonSerializer.Serialize(post), Encoding.UTF8, ApplicationJson));
-        if (!httpResponseMessage.IsSuccessStatusCode) {
-            await Shell.Current.DisplayAlert("Error", await httpResponseMessage.Content.ReadAsStringAsync(), "OK");
-        }
-        return httpResponseMessage.IsSuccessStatusCode;
+    public async Task<bool> DeletePostAsync(int postId) {
+        var response = await HttpClient.DeleteAsync($"{_postEndPointUrl}({postId})");
+        return response.IsSuccessStatusCode;
     }
 
     public async Task<Post> GetItemAsync(string id)
         => (await RequestItemsAsync($"?$filter={nameof(Post.PostId)} eq {id}")).FirstOrDefault();
 
     public async Task<IEnumerable<Post>> GetItemsAsync(bool forceRefresh = false)
-        => await RequestItemsAsync();
+        => await RequestItemsAsync($"?$expand=Author($expand=Photo)");
 
 
-    private async Task<IEnumerable<Post>> RequestItemsAsync(string query = null)
-        => JsonNode.Parse(await HttpClient.GetStringAsync($"{_postEndPointUrl}{query}"))!["value"].Deserialize<IEnumerable<Post>>();
+    private async Task<IEnumerable<Post>> RequestItemsAsync(string query = null) {
+        return JsonNode.Parse(await HttpClient.GetStringAsync($"{_postEndPointUrl}{query}"))!["value"].Deserialize<IEnumerable<Post>>();
+    }
 
     public async Task<string> Authenticate(string userName, string password) {
-        HttpResponseMessage tokenResponse = await RequestTokenAsync(userName, password);
-        string reponseContent = await tokenResponse.Content.ReadAsStringAsync();
+        HttpResponseMessage tokenResponse;
+        try {
+            tokenResponse = await RequestTokenAsync(userName, password);
+        }
+        catch (Exception) {
+#if DEBUG
+            await Application.Current.MainPage.DisplayAlert("Couldn't reach the WebAPI service", "Potential reasons: \n\n- The WebAPI project is not started. Please right-click the WebAPI project and choose Debug -> Start New Instance \n\n- You debug the project using a physical device. Please try using an emulator \n\n- IIS Express on Windows blocks the access. Please follow the recommendations in the example description", "OK");
+#endif
+            return "An error occurred when processing the request";
+        }
         if (tokenResponse.IsSuccessStatusCode) {
             HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await tokenResponse.Content.ReadAsStringAsync());
-            return string.Empty;
+            return null;
         }
-        return reponseContent;
+        else {
+            return await tokenResponse.Content.ReadAsStringAsync();
+        }
     }
 
     private async Task<HttpResponseMessage> RequestTokenAsync(string userName, string password) {
-        HttpResponseMessage response = null;
-        try {
-            response = await HttpClient.PostAsync($"{_apiUrl}Authentication/Authenticate",
+        return await HttpClient.PostAsync($"{ApiUrl}Authentication/Authenticate",
                                             new StringContent(JsonSerializer.Serialize(new { userName, password = $"{password}" }), Encoding.UTF8,
                                             ApplicationJson));
-        }
-        catch (Exception ex) {
-            response = new HttpResponseMessage(System.Net.HttpStatusCode.BadGateway) { Content = new StringContent("An error occurred when processing the request") };
-        }
-        return response;
     }
 
+    public async Task<ApplicationUser> CurrentUser() {
+        ApplicationUser user;
+        try {
+            string  stringResponse = await HttpClient.GetStringAsync($"{ApiUrl}CustomEndpoint/CurrentUser");
+            var options = new JsonSerializerOptions {
+                PropertyNameCaseInsensitive = true
+            };
+            user = JsonSerializer.Deserialize<ApplicationUser>(stringResponse, options);
+        }
+        catch (Exception) {
+            return null;
+        }
+        return user;
+    }
 }
 

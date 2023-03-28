@@ -1,14 +1,19 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Runtime.CompilerServices;
+using DevExpress.ExpressApp;
 using DevExpress.ExpressApp.ConditionalAppearance;
 using DevExpress.ExpressApp.Security;
 
-namespace WebAPI.BusinessObjects;
+namespace WebApi.BusinessObjects;
 
 [Table("PermissionPolicyUserLoginInfo")]
 public class ApplicationUserLoginInfo : ISecurityUserLoginInfo {
-	[Browsable(false)]
+
+    public ApplicationUserLoginInfo() { }
+
+    [Browsable(false)]
     public virtual Guid ID { get; protected set; }
 
     [Appearance("PasswordProvider", Enabled = false, Criteria = "!(IsNewObject(this)) and LoginProviderName == '" + SecurityDefaults.PasswordAuthentication + "'", Context = "DetailView")]

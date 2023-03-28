@@ -16,11 +16,6 @@ namespace MAUI.ViewModels {
 			set => SetProperty(ref _isBusy, value);
 		}
 
-		public string Title {
-			get => _title;
-			set => SetProperty(ref _title, value);
-		}
-
 		public virtual Task InitializeAsync(object parameter) => Task.CompletedTask;
 
 		protected bool SetProperty<T>(ref T backingStore, T value, [CallerMemberName] string propertyName = "", Action onChanged = null) {

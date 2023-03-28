@@ -1,8 +1,8 @@
-﻿
+
 <Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net7.0-android;net7.0-ios</TargetFrameworks>
+		<TargetFrameworks>net7.0-ios;net7.0-android</TargetFrameworks>
 		<OutputType>Exe</OutputType>
 		<UseMaui>true</UseMaui>
 		<SingleProject>true</SingleProject>
@@ -10,7 +10,7 @@
 		<RootNamespace>MAUI</RootNamespace>
 
 		<!-- Display name -->
-		<ApplicationTitle>MAUI</ApplicationTitle>
+		<ApplicationTitle>Role-Based Data Access</ApplicationTitle>
 
 		<!-- App Identifier -->
 		<ApplicationId>com.companyname.MAUI</ApplicationId>
@@ -26,10 +26,10 @@
 
 	<ItemGroup>
 		<!-- App Icon -->
-		<MauiImage Include="Resources\appicon.svg" IsAppIcon="true" ForegroundFile="Resources\splashscreen.svg" Color="#FFFFFF" />
+		<MauiIcon Include="Resources\appicon.svg" ForegroundFile="Resources\appiconfg.svg" Color="#6750A4" />
 
 		<!-- Splash Screen -->
-		<MauiSplashScreen Include="Resources\splashscreen.svg" Color="#5B27D9" />
+		<MauiSplashScreen Include="Resources\splash.svg" Color="#6750A4" BaseSize="128,128"/>
 
 		<!-- Images -->
 		<MauiImage Include="Resources\Images\*" />
@@ -60,6 +60,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <None Remove="Platforms\Android\Resources\xml\network_security_config.xml" />
 	  <None Remove="Platforms\Android\Resources\xml\provider_paths.xml" />
 	</ItemGroup>
 
@@ -69,6 +70,13 @@
 		<PackageReference Include="DevExpress.Maui.Core" Version="22.2.3" />
     <PackageReference Include="DevExpress.Maui.Editors" Version="22.2.3" />
   </ItemGroup>
+
+
+	<ItemGroup>
+	  <Compile Update="Views\AppShell.xaml.cs">
+	    <DependentUpon>AppShell.xaml</DependentUpon>
+	  </Compile>
+	</ItemGroup>
 
 
 	

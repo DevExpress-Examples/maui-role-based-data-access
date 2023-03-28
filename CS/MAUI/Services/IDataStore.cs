@@ -1,17 +1,14 @@
-﻿namespace MAUI.Services {
-	public interface IDataStore<T> {
-		Task<bool> AddItemAsync(T item);
+﻿using MAUI.Models;
 
-		Task<T> GetItemAsync(string id);
+namespace MAUI.Services {
+    public interface IDataStore<T> {
+        Task<T> GetItemAsync(string id);
 
-		Task<IEnumerable<T>> GetItemsAsync(bool forceRefresh = false);
+        Task<IEnumerable<T>> GetItemsAsync(bool forceRefresh = false);
 
-		Task<bool> UserCanCreatePostAsync();
-
-		Task<byte[]> GetAuthorPhotoAsync(int postId);
-
-		Task ArchivePostAsync(T post);
-
-		Task ShapeIt();
-	}
+        Task<bool> UserCanDeletePostAsync();
+        Task<bool> DeletePostAsync(int postId);
+        Task<string> Authenticate(string userName, string password);
+        Task<ApplicationUser> CurrentUser();
+    }
 }

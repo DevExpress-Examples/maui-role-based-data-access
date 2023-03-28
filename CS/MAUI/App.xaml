@@ -1,27 +1,43 @@
-﻿<Application
-    x:Class="MAUI.App"
+﻿<Application x:Class="MAUI.App"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:MAUI"
-    xmlns:windows="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.WindowsSpecific;assembly=Microsoft.Maui.Controls"
-    windows:Application.ImageDirectory="Assets">
+    xmlns:windows="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.WindowsSpecific;assembly=Microsoft.Maui.Controls" windows:Application.ImageDirectory="Assets"
+    xmlns:dxco="clr-namespace:DevExpress.Maui.Controls;assembly=DevExpress.Maui.Controls">>
     <Application.Resources>
         <ResourceDictionary>
             <Color x:Key="Primary">#6750A4</Color>
+            <Color x:Key="PrimaryLight">#D0BCFF</Color>
+            <Color x:Key="White">#FFFFFF</Color>
+            <Color x:Key="Gray50">#F2F2F7</Color>
+            <Color x:Key="Gray100">#E1E1E1</Color>
+            <Color x:Key="Gray200">#C8C8C8</Color>
+            <Color x:Key="Gray300">#ACACAC</Color>
+            <Color x:Key="Gray400">#919191</Color>
             <Color x:Key="Gray500">#6E6E6E</Color>
             <Color x:Key="Gray600">#404040</Color>
+            <Color x:Key="Gray900">#212121</Color>
+            <Color x:Key="Gray950">#141414</Color>
             <Color x:Key="NormalText">#55575c</Color>
             <Color x:Key="NormalHeaderText">#55575c</Color>
             <Color x:Key="NormalLightText">#959aa0</Color>
             <Color x:Key="TitleTextColor">White</Color>
             <Color x:Key="NormalBackgroundColor">White</Color>
+            <Color x:Key="Background_Dark">#1C1A22</Color>
+            <Color x:Key="Button_Light_Pressed">#ECE6F3</Color>
+            <Color x:Key="Button_Dark_Pressed">#322F3A</Color>
+            <Color x:Key="Card_Background_Dark">#2B2831</Color>
             <Style TargetType="NavigationPage">
-                <Setter Property="BarBackgroundColor" Value="{StaticResource Primary}" />
+                <Setter Property="BarBackgroundColor" Value="{AppThemeBinding Light={StaticResource TitleTextColor}, Dark={StaticResource Gray950}}" />
                 <Setter Property="BarTextColor" Value="White" />
             </Style>
-            <Style x:Key="PrimaryButton" TargetType="Button">
-                <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
-                <Setter Property="TextColor" Value="White" />
+            <Style TargetType="Label">
+                <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
+            </Style>
+
+            <Style TargetType="Page" ApplyToDerivedTypes="True">
+                <Setter Property="Padding" Value="0"/>
+                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Gray50}, Dark={StaticResource Background_Dark}}" />
             </Style>
             <Style x:Key="ShellStyle" TargetType="Element">
                 <Setter Property="Shell.BackgroundColor" Value="{StaticResource Primary}" />
@@ -31,6 +47,23 @@
                 <Setter Property="Shell.TabBarForegroundColor" Value="{StaticResource Primary}" />
                 <Setter Property="Shell.TabBarTitleColor" Value="{StaticResource Primary}" />
                 <Setter Property="Shell.TabBarUnselectedColor" Value="{StaticResource NormalText}" />
+            </Style>
+            <Style x:Key="ShellStyleiOS" TargetType="Element">
+                <Setter Property="Shell.BackgroundColor" Value="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Primary}}" />
+            </Style>
+            <Style x:Key="TitleColors_iOS_Label" TargetType="Label">
+                <Setter Property="TextColor" Value="{StaticResource Gray950}}" />
+            </Style>
+            <Style x:Key="TitleColors_iOS_Button" TargetType="dxco:SimpleButton">
+                <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Gray950}, Dark={StaticResource White}}" />
+                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Primary}}" />
+            </Style>
+            <Style x:Key="TitleColors_Android_Label" TargetType="Label">
+                <Setter Property="TextColor" Value="{StaticResource Gray950}" />
+            </Style>
+            <Style x:Key="TitleColors_Android_Button" TargetType="dxco:SimpleButton">
+                <Setter Property="TextColor" Value="{StaticResource Gray950}" />
+                <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
             </Style>
         </ResourceDictionary>
     </Application.Resources>
