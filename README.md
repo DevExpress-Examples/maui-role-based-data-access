@@ -1,11 +1,11 @@
 # Role-Based Data Access with the DevExpress Web API Service
 
-This example shows how to use our free [.NET App Security Library & Web API Service](https://www.devexpress.com/products/net/application_framework/security-web-api-service.xml) to implement authentication and role-based data access in your .NET MAUI application. A wizard helps you generate a ready-to-use authentication service. This service uses the [Entity Framework Core](https://docs.microsoft.com/en-us/ef/core/) ORM to access a database.    
+This example uses our free [.NET App Security Library & Web API Service](https://www.devexpress.com/products/net/application_framework/security-web-api-service.xml) to implement authentication and role-based data access. We ran a built-in wizard to generate a ready-to-use authentication service. This service uses [Entity Framework Core](https://docs.microsoft.com/en-us/ef/core/) to access a database. A .NET MAUI application sends requests to the Web API Service to obtain or modify data.
 
 <img src="https://user-images.githubusercontent.com/12169834/228174231-0d1f2d88-8b2b-4db4-8969-fd9b2379d8ce.png" width="30%"/>
 
 
-You can find more information about our Web API Service's access restrictions in the following resources:
+If you are new to the DevExpress Web API Service Library, you may want to review the following resources. 
 
 [Create a Standalone Web API Application](https://docs.devexpress.com/eXpressAppFramework/403401/backend-web-api-service/create-new-application-with-web-api-service?p=net6)
 
@@ -17,13 +17,13 @@ You can find more information about our Web API Service's access restrictions in
 
 ## Run Projects
 
-1. Run Visual Studio as an administrator so that the IDE can create the database as defined in `appsettings.json`. Open the `WebAPI` solution.
+1. Run Visual Studio as Administrator and open the solution. Administrator privileges allow the IDE to create a database when you run the Web Service project. 
 
-2. Choose the `WebApi` item in the **debug** dropdown menu. This selection will debug the project on the [Kestrel](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/servers/kestrel?view=aspnetcore-7.0) web server.
+2. Select **WebApi** in the **debug** dropdown menu. This choice enables [Kestrel](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/servers/kestrel?view=aspnetcore-7.0) as the web server for debug runs.
 
     ![Run Settings](images/authenticate-run-settings.png)
 
-    If you prefer IIS Express to Kestrel, select **IIS Express** from the **debug** drop-down menu, and use an external text editor to add the following code to `.vs\MAUI_WebAPI\config\applicationhost.config`:
+    If you prefer IIS Express to Kestrel, select **IIS Express** in the **debug** drop-down menu. Use an external text editor to add the following code to `.vs\MAUI_WebAPI\config\applicationhost.config`:
 
     ```xaml
     <sites>
@@ -40,7 +40,7 @@ You can find more information about our Web API Service's access restrictions in
     </sites>
     ```
 
-3. Right-click the MAUI project, choose `Set as Startup Project`, and select your emulator. Note that physical devices that are attached over USB do not allow you to access your machine's localhost.
+3. Right-click the `MAUI` project, choose `Set as Startup Project`, and select your emulator. Note that physical devices that are attached over USB cannot access your machine's localhost.
 4. Right-click the `WebAPI` project and select `Debug > Start new instance`.
 5. Right-click the `MAUI` project and select `Debug > Start new instance`.
 
@@ -48,7 +48,7 @@ You can find more information about our Web API Service's access restrictions in
 
 ### Service and Communication
 
-* DevExpress Web API Service uses JSON Web Tokens (JWT) to authorize users. Call `WebAPI`'s **Authenticate** endpoint and pass a username and password to the endpoint from the .NET MAUI application. In this example, token generation logic is implemented in the `WebAPIService.RequestTokenAsync` method:
+* DevExpress Web API Service uses JSON Web Tokens (JWT) to authorize users. To obtain a token, pass username and password to the **Authenticate** endpoint. In this example, token generation logic is implemented in the `WebAPIService.RequestTokenAsync` method:
 
     ```csharp
       private async Task<HttpResponseMessage> RequestTokenAsync(string userName, string password) {
@@ -66,21 +66,21 @@ You can find more information about our Web API Service's access restrictions in
 
   File to Look At: [WebAPIService.cs](CS/MAUI/Services/WebAPIService.cs)
 
-* WebApi service contains the following custom endpoints:
+* We implemented the following custom endpoints in the `WebApi` service:
 
     * The **CanDeletePost** endpoint allows you to send a request from a mobile device to the service and check whether the current user can delete posts. This allows you to show/hide the delete button in the UI.
 
         File to Look At: [Updater.cs](CS/WebAPI/Controllers/CustomEndpointController.cs)
 
-    * The **CurrentUser** endpoint retrieves the current user. You can use it to get the avatar of the logged-in user.
+    * The **CurrentUser** endpoint returns information about the authenticated user.
 
         File to Look At: [Updater.cs](CS/WebAPI/Controllers/CustomEndpointController.cs)
 
-    * The **GetAuthorImage** endpoint retrieves an image by a user ID. A user image does not come with the user object to allow you to load them separately.
+    * The **GetAuthorImage** endpoint retrieves an author image by user ID. 
 
         File to Look At: [Updater.cs](CS/WebAPI/Controllers/PublicEndpointController.cs)
 
-    * The **GetAuthorImage** endpoint retrieves a post image by a post ID. A post image does not come with the user object to allow you to load them separately.
+    * The **GetPostImage** endpoint retrieves an image by post ID. 
 
         File to Look At: [Updater.cs](CS/WebAPI/Controllers/PublicEndpointController.cs)
 
@@ -89,7 +89,7 @@ You can find more information about our Web API Service's access restrictions in
 
     File to Look At: [Updater.cs](CS/WebAPI/DatabaseUpdate/Updater.cs)
 
-* Use the `PermissionPolicyRole` objects in the `Updater` class to add a user permissions. The following code snippet calls the `AddObjectPermissionFromLambda` method to configure the "Viewer" role that allows the user to read published posts:
+* `PermissionPolicyRole` objects in the `Updater` class add user permissions. The following code snippet calls the `AddObjectPermissionFromLambda` method to configure the "Viewer" role (allow the user to read published posts):
 
     ```csharp
     role.AddObjectPermissionFromLambda(SecurityOperations.Read, p => p.IsPublished, SecurityPermissionState.Allow);
@@ -97,7 +97,7 @@ You can find more information about our Web API Service's access restrictions in
 
     File to Look At: [Updater.cs](CS/WebAPI/DatabaseUpdate/Updater.cs)
 
-* The `AddTypePermissionsRecursively` method adds CRUD (create, read, update, delete) permissions for the `Post` type to the "Editor" users (Alex, Antony, and Dennis):
+* The `AddTypePermissionsRecursively` method modifies privileges for the "Editor" role (Alex, Antony, and Dennis). The method adds CRUD permissions (create, read, update, delete) for the `Post` type:
     
     ```csharp
     role.AddTypePermissionsRecursively<Post>(SecurityOperations.Read | SecurityOperations.Write | SecurityOperations.Create | SecurityOperations.DeleteObject, SecurityPermissionState.Allow);
@@ -116,7 +116,7 @@ You can find more information about our Web API Service's access restrictions in
 
     File to Look At: [LoginPage.xaml](CS/MAUI/Views/LoginPage.xaml)
     
-* To validate the [PasswordEdit](https://docs.devexpress.com/MAUI/DevExpress.Maui.Editors.PasswordEdit) control's value, use the [EditBase.HasError](https://docs.devexpress.com/MAUI/DevExpress.Maui.Editors.EditBase.HasError) and [EditBase.ErrorText](https://docs.devexpress.com/MAUI/DevExpress.Maui.Editors.EditBase.ErrorText) inherited properties.
+* To validate user input in the [PasswordEdit](https://docs.devexpress.com/MAUI/DevExpress.Maui.Editors.PasswordEdit) control, use [EditBase.HasError](https://docs.devexpress.com/MAUI/DevExpress.Maui.Editors.EditBase.HasError) and [EditBase.ErrorText](https://docs.devexpress.com/MAUI/DevExpress.Maui.Editors.EditBase.ErrorText) inherited properties.
 
     ```xaml
     <dxe:PasswordEdit ... HasError="{Binding HasError}" ErrorText="{Binding ErrorText}"/>
@@ -157,7 +157,7 @@ You can find more information about our Web API Service's access restrictions in
     File to Look At: [LoginViewModel.cs](CS/MAUI/ViewModels/LoginViewModel.cs)
 
 * Specify the [TextEdit.ReturnType](https://docs.devexpress.com/MAUI/DevExpress.Maui.Editors.EditBase.ReturnType) inherited property to focus the [PasswordEdit](https://docs.devexpress.com/MAUI/DevExpress.Maui.Editors.PasswordEdit) control after the [TextEdit](https://docs.devexpress.com/MAUI/DevExpress.Maui.Editors.TextEdit) control's value is edited.
-* Bind the [PasswordEdit.ReturnCommand](https://docs.devexpress.com/MAUI/DevExpress.Maui.Editors.EditBase.ReturnCommand) property to the **Login** command to execute the command when a user enters the password:
+* Use the [PasswordEdit.ReturnCommand](https://docs.devexpress.com/MAUI/DevExpress.Maui.Editors.EditBase.ReturnCommand) property to specify a command (**Login**) that runs when a user enters the password:
 
     ```xaml
     <dxe:PasswordEdit ReturnCommand="{Binding LoginCommand}"/>
@@ -184,7 +184,7 @@ You can find more information about our Web API Service's access restrictions in
 
     File to Look At: [LoginViewModel.cs](CS/MAUI/ViewModels/LoginViewModel.cs)
 
-* In the UI, the Image object caches its displayed image.  because we pass a string with a Uri to the Image. Image caching is described in the [MAUI documentation](https://learn.microsoft.com/en-us/dotnet/maui/user-interface/controls/image?view=net-maui-7.0#load-a-remote-image). To create a Uri, we use a [MultiBinding](https://learn.microsoft.com/en-us/dotnet/maui/fundamentals/data-binding/multibinding?view=net-maui-7.0) that gets the host name and the author or post ID:
+* We enabled image caching in this project. To achieve that, we needed to identify images by their Uri. To create a Uri, we use a [MultiBinding](https://learn.microsoft.com/en-us/dotnet/maui/fundamentals/data-binding/multibinding?view=net-maui-7.0) that obtains the host name and the author/post ID. For additional information on image caching, refer to [MAUI documentation](https://learn.microsoft.com/en-us/dotnet/maui/user-interface/controls/image?view=net-maui-7.0#load-a-remote-image). 
 
     ```xaml
     <Image>
