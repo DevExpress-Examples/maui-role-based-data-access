@@ -85,7 +85,7 @@ If you are new to the DevExpress Web API Service Library, you may want to review
         File to Look At: [Updater.cs](CS/WebAPI/Controllers/PublicEndpointController.cs)
 
 
-* To create users and specify their passwords, use the `Updater.UpdateDatabaseAfterUpdateSchema` method. You can modify a user's password directly in the database or use the full version of our [XAF UI](https://docs.devexpress.com/eXpressAppFramework/112649/data-security-and-safety/security-system/authentication/passwords-in-the-security-system).
+* The `Updater.UpdateDatabaseAfterUpdateSchema` method generates users and specifies their login credentials. You can modify a user's password directly in the database. Note: Our cross-platform .NET Application Framework ([XAF UI](https://docs.devexpress.com/eXpressAppFramework/112649/data-security-and-safety/security-system/authentication/passwords-in-the-security-system)) allows you to quickly build a desktop or web UI that accesses the same database.
 
     File to Look At: [Updater.cs](CS/WebAPI/DatabaseUpdate/Updater.cs)
 
