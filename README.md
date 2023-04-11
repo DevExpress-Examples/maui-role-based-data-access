@@ -5,7 +5,7 @@ This example uses our free [.NET App Security Library & Web API Service](https:/
 <img src="https://user-images.githubusercontent.com/12169834/228174231-0d1f2d88-8b2b-4db4-8969-fd9b2379d8ce.png" width="30%"/>
 
 
-If you are new to the DevExpress Web API Service Library, you may want to review the following resources. 
+If you are new to the DevExpress Web API Service Library, you may want to review the following resources:
 
 [Create a Standalone Web API Application](https://docs.devexpress.com/eXpressAppFramework/403401/backend-web-api-service/create-new-application-with-web-api-service?p=net6)
 
@@ -19,7 +19,7 @@ If you are new to the DevExpress Web API Service Library, you may want to review
 
 1. Run Visual Studio as Administrator and open the solution. Administrator privileges allow the IDE to create a database when you run the Web Service project. 
 
-2. Select **WebApi** in the **debug** dropdown menu. This choice enables [Kestrel](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/servers/kestrel?view=aspnetcore-7.0) as the web server for debug runs.
+2. Select **WebApi** in the **debug** drop-down menu. This choice enables [Kestrel](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/servers/kestrel?view=aspnetcore-7.0) as the web server for debug runs.
 
     ![Run Settings](images/authenticate-run-settings.png)
 
@@ -107,7 +107,7 @@ If you are new to the DevExpress Web API Service Library, you may want to review
 
 ### Login UI and View Model
 
-* Use the [TextEdit.StartIcon](https://docs.devexpress.com/MAUI/DevExpress.Maui.Editors.EditBase.StartIcon) and [PasswordEdit.StartIcon](https://docs.devexpress.com/MAUI/DevExpress.Maui.Editors.EditBase.StartIcon) properties to display icons in the [TextEdit](https://docs.devexpress.com/MAUI/DevExpress.Maui.Editors.TextEdit) and [PasswordEdit](https://docs.devexpress.com/MAUI/DevExpress.Maui.Editors.PasswordEdit) controls.
+* Use [TextEdit.StartIcon](https://docs.devexpress.com/MAUI/DevExpress.Maui.Editors.EditBase.StartIcon) and [PasswordEdit.StartIcon](https://docs.devexpress.com/MAUI/DevExpress.Maui.Editors.EditBase.StartIcon) properties to display icons in [TextEdit](https://docs.devexpress.com/MAUI/DevExpress.Maui.Editors.TextEdit) and [PasswordEdit](https://docs.devexpress.com/MAUI/DevExpress.Maui.Editors.PasswordEdit) controls.
 
     ```xaml
     <dxe:TextEdit LabelText="Login" StartIcon="editorsname" .../>
