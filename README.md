@@ -21,7 +21,7 @@ If you are new to the DevExpress Web API Service Library, you may want to review
 
 2. Select **WebApi** in the **debug** drop-down menu. This choice enables [Kestrel](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/servers/kestrel?view=aspnetcore-7.0) as the web server for debug runs.
 
-    ![Run Settings](images/authenticate-run-settings.png)
+    ![image](https://user-images.githubusercontent.com/12169834/231375597-9723a388-f8df-4e3b-ad42-135a150d2e78.png)
 
     If you prefer IIS Express to Kestrel, select **IIS Express** in the **debug** drop-down menu. Use an external text editor to add the following code to `.vs\MAUI_WebAPI\config\applicationhost.config`:
 
