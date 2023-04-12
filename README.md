@@ -1,3 +1,7 @@
+<!-- default badges list -->
+![](https://img.shields.io/endpoint?url=https://codecentral.devexpress.com/api/v1/VersionRange/626786332/23.1.2%2B)
+[![](https://img.shields.io/badge/📖_How_to_use_DevExpress_Examples-e9f6fc?style=flat-square)](https://docs.devexpress.com/GeneralInformation/403183)
+<!-- default badges end -->
 # Role-Based Data Access with the DevExpress Web API Service
 
 This example uses our free [.NET App Security Library & Web API Service](https://www.devexpress.com/products/net/application_framework/security-web-api-service.xml) to implement authentication and role-based data access. We ran a built-in wizard to generate a ready-to-use authentication service. This service uses [Entity Framework Core](https://docs.microsoft.com/en-us/ef/core/) to access a database. A .NET MAUI application sends requests to the Web API Service to obtain or modify data.
