@@ -5,12 +5,11 @@
 <!-- default badges end -->
 # Role-Based Data Access with the DevExpress Web API Service
 
-This example uses our free [.NET App Security Library & Web API Service](https://www.devexpress.com/products/net/application_framework/security-web-api-service.xml) to implement authentication and role-based data access. We ran a built-in wizard to generate a ready-to-use authentication service. This service uses [Entity Framework Core](https://docs.microsoft.com/en-us/ef/core/) to access a database. A .NET MAUI application sends requests to the Web API Service to obtain or modify data.
+This example uses our free [.NET App Security & Web API Service](https://www.devexpress.com/products/net/application_framework/security-web-api-service.xml) to implement authentication and role-based data access. We ran a built-in wizard to generate a ready-to-use authentication service. This service uses [Entity Framework Core](https://docs.microsoft.com/en-us/ef/core/) to access a database. A .NET MAUI application sends requests to the Web API Service to obtain or modify data.
 
 <img src="https://user-images.githubusercontent.com/12169834/228174231-0d1f2d88-8b2b-4db4-8969-fd9b2379d8ce.png" width="30%"/>
 
-
-If you are new to the DevExpress Web API Service Library, you may want to review the following resources:
+If you are new to the DevExpress .NET App Security & Web API Service, you may want to review the following resources:
 
 [Create a Standalone Web API Application](https://docs.devexpress.com/eXpressAppFramework/403401/backend-web-api-service/create-new-application-with-web-api-service?p=net6)
 
