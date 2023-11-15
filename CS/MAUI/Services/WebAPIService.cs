@@ -3,7 +3,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using MAUI.Models;
-using ON = DevExpress.Maui.Core.Internal.On;
+using ON = DevExpress.Maui.Core.On;
 namespace MAUI.Services;
 
 public class WebAPIService : IDataStore<Post> {
