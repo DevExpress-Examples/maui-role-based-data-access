@@ -243,7 +243,7 @@ For more information, please refer to [Connect to local web services from Androi
 ## Files to Look At
 
 * [WebAPIService.cs](CS/MAUI/Services/WebAPIService.cs)
-* [Updater.cs](CS/WebAPI/DatabaseUpdate/Updater.cs)
+* [Updater.cs](CS/WebApi/DatabaseUpdate/Updater.cs)
 * [LoginPage.xaml](CS/MAUI/Views/LoginPage.xaml)
 * [ItemsPage.xaml](CS/MAUI/Views/ItemsPage.xaml)
 * [LoginViewModel.cs](CS/MAUI/ViewModels/LoginViewModel.cs)
