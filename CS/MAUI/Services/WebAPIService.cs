@@ -23,7 +23,7 @@ public class WebAPIService : IDataStore<Post> {
     public async Task<bool> UserCanDeletePostAsync() {
         var jsonString = await HttpClient.GetStringAsync($"{ApiUrl}CustomEndpoint/CanDeletePost?typeName={typeof(Post).Name}");
         return (bool)JsonNode.Parse(jsonString);
-    }
+    } 
     public async Task<bool> DeletePostAsync(int postId) {
         var response = await HttpClient.DeleteAsync($"{_postEndPointUrl}({postId})");
         return response.IsSuccessStatusCode;
