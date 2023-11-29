@@ -86,7 +86,7 @@ If you are new to the DevExpress .NET App Security & Web API Service, you may wa
 
     * The **GetPostImage** endpoint retrieves an image by post ID. 
 
-        File to Look At: [Updater.cs](CS/WebAPI/Controllers/PublicEndpointController.cs)
+        File to Look At: [Updater.cs](CS/WebApi/Controllers/PublicEndpointController.cs)
 
 
 * The `Updater.UpdateDatabaseAfterUpdateSchema` method generates users and specifies their login credentials. You can modify a user's password directly in the database. Note: Our cross-platform .NET Application Framework ([XAF UI](https://docs.devexpress.com/eXpressAppFramework/112649/data-security-and-safety/security-system/authentication/passwords-in-the-security-system)) allows you to quickly build a desktop or web UI that accesses the same database.
