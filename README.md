@@ -74,15 +74,15 @@ If you are new to the DevExpress .NET App Security & Web API Service, you may wa
 
     * The **CanDeletePost** endpoint allows you to send a request from a mobile device to the service and check whether the current user can delete posts. This allows you to show/hide the delete button in the UI.
 
-        File to Look At: [Updater.cs](CS/WebAPI/Controllers/CustomEndpointController.cs)
+        File to Look At: [Updater.cs](CS/WebApi/Controllers/CustomEndpointController.cs)
 
     * The **CurrentUser** endpoint returns information about the authenticated user.
 
-        File to Look At: [Updater.cs](CS/WebAPI/Controllers/CustomEndpointController.cs)
+        File to Look At: [Updater.cs](CS/WebApi/Controllers/CustomEndpointController.cs)
 
     * The **GetAuthorImage** endpoint retrieves an author image by user ID. 
 
-        File to Look At: [Updater.cs](CS/WebAPI/Controllers/PublicEndpointController.cs)
+        File to Look At: [Updater.cs](CS/WebApi/Controllers/PublicEndpointController.cs)
 
     * The **GetPostImage** endpoint retrieves an image by post ID. 
 
@@ -91,7 +91,7 @@ If you are new to the DevExpress .NET App Security & Web API Service, you may wa
 
 * The `Updater.UpdateDatabaseAfterUpdateSchema` method generates users and specifies their login credentials. You can modify a user's password directly in the database. Note: Our cross-platform .NET Application Framework ([XAF UI](https://docs.devexpress.com/eXpressAppFramework/112649/data-security-and-safety/security-system/authentication/passwords-in-the-security-system)) allows you to quickly build a desktop or web UI that accesses the same database.
 
-    File to Look At: [Updater.cs](CS/WebAPI/DatabaseUpdate/Updater.cs)
+    File to Look At: [Updater.cs](CS/WebApi/DatabaseUpdate/Updater.cs)
 
 * `PermissionPolicyRole` objects in the `Updater` class add user permissions. The following code snippet calls the `AddObjectPermissionFromLambda` method to configure the "Viewer" role (allow the user to read published posts):
 
@@ -99,7 +99,7 @@ If you are new to the DevExpress .NET App Security & Web API Service, you may wa
     role.AddObjectPermissionFromLambda(SecurityOperations.Read, p => p.IsPublished, SecurityPermissionState.Allow);
     ```
 
-    File to Look At: [Updater.cs](CS/WebAPI/DatabaseUpdate/Updater.cs)
+    File to Look At: [Updater.cs](CS/WebApi/DatabaseUpdate/Updater.cs)
 
 * The `AddTypePermissionsRecursively` method modifies privileges for the "Editor" role (Alex, Antony, and Dennis). The method adds CRUD permissions (create, read, update, delete) for the `Post` type:
     
@@ -107,7 +107,7 @@ If you are new to the DevExpress .NET App Security & Web API Service, you may wa
     role.AddTypePermissionsRecursively<Post>(SecurityOperations.Read | SecurityOperations.Write | SecurityOperations.Create | SecurityOperations.DeleteObject, SecurityPermissionState.Allow);
     ```
 
-    File to Look At: [Updater.cs](CS/WebAPI/DatabaseUpdate/Updater.cs)
+    File to Look At: [Updater.cs](CS/WebApi/DatabaseUpdate/Updater.cs)
 
 ### Login UI and View Model
 
