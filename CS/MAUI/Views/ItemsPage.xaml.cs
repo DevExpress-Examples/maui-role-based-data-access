@@ -10,7 +10,7 @@ namespace MAUI.Views
             InitializeComponent();
         }
 
-        private void SimpleButton_Clicked(object sender, EventArgs e)
+        private void DXButton_Clicked(object sender, EventArgs e)
         {
 
         }
