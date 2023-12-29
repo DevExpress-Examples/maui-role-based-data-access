@@ -3,7 +3,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:MAUI"
     xmlns:windows="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.WindowsSpecific;assembly=Microsoft.Maui.Controls" windows:Application.ImageDirectory="Assets"
-    xmlns:dxco="clr-namespace:DevExpress.Maui.Controls;assembly=DevExpress.Maui.Controls">>
+    xmlns:dx="clr-namespace:DevExpress.Maui.Core;assembly=DevExpress.Maui.Core">
     <Application.Resources>
         <ResourceDictionary>
             <Color x:Key="Primary">#6750A4</Color>
@@ -54,14 +54,14 @@
             <Style x:Key="TitleColors_iOS_Label" TargetType="Label">
                 <Setter Property="TextColor" Value="{StaticResource Gray950}}" />
             </Style>
-            <Style x:Key="TitleColors_iOS_Button" TargetType="dxco:SimpleButton">
+            <Style x:Key="TitleColors_iOS_Button" TargetType="dx:DXButton">
                 <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Gray950}, Dark={StaticResource White}}" />
                 <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Primary}}" />
             </Style>
             <Style x:Key="TitleColors_Android_Label" TargetType="Label">
                 <Setter Property="TextColor" Value="{StaticResource Gray950}" />
             </Style>
-            <Style x:Key="TitleColors_Android_Button" TargetType="dxco:SimpleButton">
+            <Style x:Key="TitleColors_Android_Button" TargetType="dx:DXButton">
                 <Setter Property="TextColor" Value="{StaticResource Gray950}" />
                 <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
             </Style>
