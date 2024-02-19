@@ -191,14 +191,14 @@ If you are new to the DevExpress .NET App Security & Web API Service, you may wa
 * We enabled image caching in this project. To achieve that, we needed to identify images by their Uri. To create a Uri, we use a [MultiBinding](https://learn.microsoft.com/en-us/dotnet/maui/fundamentals/data-binding/multibinding?view=net-maui-7.0) that obtains the host name and the author/post ID. For additional information on image caching, refer to [MAUI documentation](https://learn.microsoft.com/en-us/dotnet/maui/user-interface/controls/image?view=net-maui-7.0#load-a-remote-image). 
 
     ```xaml
-    <Image>
-        <Image.Source>
+    <dx:DXImage>
+        <dx:DXImage.Source>
             <MultiBinding StringFormat="{}{0}PublicEndpoint/PostImage/{1}">
                 <Binding Source="{x:Static webService:WebAPIService.ApiUrl}"/>
                 <Binding Path="PostId"/>
             </MultiBinding>
-        </Image.Source>
-    </Image>
+        </dx:DXImage.Source>
+    </dx:DXImage>
     ```
 
     File to Look At: [ItemsPage.xaml](CS/MAUI/Views/ItemsPage.xaml)
