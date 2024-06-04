@@ -9,11 +9,6 @@ namespace MAUI.Views
         {
             InitializeComponent();
         }
-
-        private void DXButton_Clicked(object sender, EventArgs e)
-        {
-
-        }
     }
     public class TitleViewFix : Grid
     {
