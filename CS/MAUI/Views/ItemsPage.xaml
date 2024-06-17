@@ -1,9 +1,7 @@
-<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:dxcv="clr-namespace:DevExpress.Maui.CollectionView;assembly=DevExpress.Maui.CollectionView" Title="Blogs"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
+    xmlns:dx="http://schemas.devexpress.com/maui" Title="Blogs"
     xmlns:ios="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific;assembly=Microsoft.Maui.Controls"
-    xmlns:dx="clr-namespace:DevExpress.Maui.Core;assembly=DevExpress.Maui.Core"
     xmlns:models="clr-namespace:MAUI.Models"
     xmlns:viewModels="clr-namespace:MAUI.ViewModels"
     xmlns:local="clr-namespace:MAUI.Views"
@@ -38,8 +36,8 @@
         <viewModels:ItemsViewModel/>
     </ContentPage.BindingContext>
     <Grid>
-        <dxcv:DXCollectionView x:Name="ItemsListView" BackgroundColor="{AppThemeBinding Light={StaticResource Gray50}, Dark={StaticResource Background_Dark}}" ItemsSource="{Binding Posts}">
-            <dxcv:DXCollectionView.ItemTemplate>
+        <dx:DXCollectionView x:Name="ItemsListView" BackgroundColor="{AppThemeBinding Light={StaticResource Gray50}, Dark={StaticResource Background_Dark}}" ItemsSource="{Binding Posts}">
+            <dx:DXCollectionView.ItemTemplate>
                 <DataTemplate x:DataType="{x:Type models:Post}">
                     <dx:DXButton CornerRadius="0" Margin="12,6,12,6" Padding="10" HeightRequest="100" BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Card_Background_Dark}}">
                         <Grid ColumnDefinitions="150,Auto,5*,4*" RowDefinitions="*,Auto">
@@ -70,7 +68,7 @@
                         </Grid>
                     </dx:DXButton>
                 </DataTemplate>
-            </dxcv:DXCollectionView.ItemTemplate>
-        </dxcv:DXCollectionView>
+            </dx:DXCollectionView.ItemTemplate>
+        </dx:DXCollectionView>
     </Grid>
 </ContentPage>
