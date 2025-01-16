@@ -12,9 +12,12 @@ namespace MAUI {
 
 			Routing.RegisterRoute(typeof(ItemsPage).FullName, typeof(ItemsPage));
 			
-			MainPage = new AppShell();
 			var navigationService = DependencyService.Get<INavigationService>();
 			navigationService.NavigateToAsync<LoginViewModel>(true);
 		}
+
+		protected override Window CreateWindow(IActivationState activationState) {
+            return new Window(new AppShell());
+        }
 	}
 }
