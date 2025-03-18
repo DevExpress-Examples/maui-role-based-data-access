@@ -45,6 +45,7 @@
     <EmbeddedResource Include="Resources\Viewer.jpg" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="DevExpress.ExpressApp" Version="24.1.*" />
     <PackageReference Include="DevExpress.ExpressApp.Api.EFCore.All" Version="24.1.*" />
     <PackageReference Include="DevExpress.ExpressApp.CodeAnalysis" Version="24.1.*" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.10" />
