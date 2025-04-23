@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net8.0-ios;net8.0-android</TargetFrameworks>
     <OutputType>Exe</OutputType>
@@ -52,6 +52,7 @@
     <None Remove="Platforms\Android\Resources\xml\provider_paths.xml" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="DevExpress.ExpressApp" Version="24.1.11" />
     <PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
     <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)" />
     <PackageReference Include="DevExpress.Maui.CollectionView" Version="24.1.*" />
