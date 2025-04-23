@@ -53,6 +53,11 @@
     <None Remove="Platforms\Android\Resources\xml\provider_paths.xml" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="DevExpress.ExpressApp" Version="24.2.*" />
+    <PackageReference Include="DevExpress.ExpressApp.CodeAnalysis" Version="24.2.6">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
     <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)" />
     <PackageReference Include="DevExpress.Maui.CollectionView" Version="24.2.*" />
