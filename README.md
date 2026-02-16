@@ -261,7 +261,7 @@ For more information, please refer to [Connect to local web services from Androi
 * [Authenticate Users with the Web API Service](https://github.com/DevExpress-Examples/maui-authenticate/)
 * [DevExpress Mobile UI for .NET MAUI](https://github.com/DevExpress-Examples/maui-demo-app/)
 <!-- feedback -->
-## Does this example address your development requirements/objectives?
+## Does This Example Address Your Development Requirements/Objectives?
 
 [<img src="https://www.devexpress.com/support/examples/i/yes-button.svg"/>](https://www.devexpress.com/support/examples/survey.xml?utm_source=github&utm_campaign=maui-role-based-data-access&~~~was_helpful=yes) [<img src="https://www.devexpress.com/support/examples/i/no-button.svg"/>](https://www.devexpress.com/support/examples/survey.xml?utm_source=github&utm_campaign=maui-role-based-data-access&~~~was_helpful=no)
 
